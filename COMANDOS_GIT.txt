@@ -1,0 +1,27 @@
+INSTRUCCIONES PARA SUBIR A GITHUB
+==================================
+
+1. Abre Git Bash en la carpeta del proyecto:
+   C:\Users\Usuario\Documents\NetBeansProjects\peluqueriaCanina
+
+2. Ejecuta estos comandos en orden:
+
+   git remote add origin https://github.com/ingdanielacastaneda-bit/peluqueriaCanin.git
+   
+   git branch -M main
+   
+   git push -u origin main
+
+3. Cuando te pida usuario y contraseña:
+   - Usuario: ingdanielacastaneda-bit
+   - Contraseña: Necesitas un TOKEN de GitHub (no tu contraseña normal)
+
+4. Para crear el TOKEN:
+   - Ve a: https://github.com/settings/tokens
+   - Click en "Generate new token" -> "Generate new token (classic)"
+   - Dale un nombre como "peluqueria"
+   - Marca la casilla "repo" (para dar acceso a repositorios)
+   - Click en "Generate token"
+   - COPIA EL TOKEN (solo se muestra una vez)
+   - Usa ese token como contraseña cuando Git Bash te lo pida
+
