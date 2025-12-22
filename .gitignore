@@ -17,4 +17,6 @@ Thumbs.db
 src/main/resources/META-INF/persistence.xml
 *.log
 dependency-reduced-pom.xml
+dependency-reduced-pom.xml
+COMANDOS_GIT.txt
 
