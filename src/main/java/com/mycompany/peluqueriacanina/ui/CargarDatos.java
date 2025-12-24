@@ -1,17 +1,46 @@
 
-package com.mycompany.peluqueriacanina.iu;
+package com.mycompany.peluqueriacanina.ui;
 
-import com.mycompany.peluqueriacanina.logica.Controladora;
+import com.mycompany.peluqueriacanina.service.MascotaService;
+import com.mycompany.peluqueriacanina.exception.PersistenceException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.ImageIcon;
 
 public class CargarDatos extends javax.swing.JPanel {
 
-    Controladora control = new Controladora();
+    private final MascotaService mascotaService = new MascotaService();
+    private javax.swing.JFrame parentFrame;
     
     public CargarDatos() {
-        //control = new Controladora();
+        this(null);
+    }
+    
+    public CargarDatos(javax.swing.JFrame parentFrame) {
+        this.parentFrame = parentFrame;
         initComponents();
+        cargarImagenes();
+    }
+    
+    private void cargarImagenes() {
+        // Intentar múltiples nombres posibles para la imagen del gato
+        ImageIcon icon = ImageLoader.loadImage("gato_jugando_lana.png");
+        if (icon == null) {
+            icon = ImageLoader.loadImage("logo_de_un_gato_amigable_feliz_jugando-removebg-preview (1).png");
+        }
+        if (icon == null) {
+            icon = ImageLoader.loadImage("logo_de_un_gato_amigable_feliz_jugando-removebg-preview.png");
+        }
+        if (icon != null) {
+            jLabel3.setIcon(icon);
+            jLabel3.setText(""); // Limpiar cualquier texto
+            jLabel3.setVisible(true);
+        } else {
+            // Si no hay imagen, ocultar el label
+            jLabel3.setIcon(null);
+            jLabel3.setText("");
+            jLabel3.setVisible(false);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -44,6 +73,7 @@ public class CargarDatos extends javax.swing.JPanel {
         cmbAtencionEspecial = new javax.swing.JComboBox<>();
         btnLimpiar = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
+        btnVolver = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Lucida Sans", 1, 36)); // NOI18N
         jLabel1.setText("PELUQUERIA CANINA");
@@ -223,6 +253,14 @@ public class CargarDatos extends javax.swing.JPanel {
             }
         });
 
+        btnVolver.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnVolver.setText("VOLVER");
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -236,13 +274,15 @@ public class CargarDatos extends javax.swing.JPanel {
                                 .addComponent(jLabel2))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(123, 123, 123)
-                                .addComponent(btnGuardar)))
+                                .addComponent(btnGuardar)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnLimpiar)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnVolver)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnLimpiar)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -258,8 +298,9 @@ public class CargarDatos extends javax.swing.JPanel {
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGuardar)
                     .addComponent(btnLimpiar)
-                    .addComponent(btnGuardar))
+                    .addComponent(btnVolver))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -326,22 +367,35 @@ public class CargarDatos extends javax.swing.JPanel {
             String nombreDueño = txtNombreDueño.getText();
             String celDueño = txtCelDueño.getText();
             
-            control.guardar(nombreMasco, raza, color, observaciones, alergico, atenEsp, 
-                          direccion, nombreDueño, celDueño);
+            mascotaService.crearMascota(nombreMasco, raza, color, observaciones, alergico, atenEsp, 
+                                      direccion, nombreDueño, celDueño);
             
             mostrarMensaje("Guardado exitosamente", "Info", "Éxito");
             btnLimpiarActionPerformed(null);
         } catch (IllegalArgumentException ex) {
             mostrarMensaje(ex.getMessage(), "Error", "Error de validación");
+        } catch (PersistenceException ex) {
+            mostrarMensaje("Error al guardar en la base de datos: " + ex.getMessage(), "Error", "Error de persistencia");
         } catch (Exception ex) {
-            mostrarMensaje("Error al guardar los datos: " + ex.getMessage(), "Error", "Error");
+            String mensaje = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+            mostrarMensaje("Error al guardar los datos: " + mensaje, "Error", "Error");
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        if (parentFrame != null) {
+            parentFrame.dispose();
+        } else {
+            // Si no hay referencia al frame, buscar el frame padre
+            javax.swing.SwingUtilities.getWindowAncestor(this).dispose();
+        }
+    }//GEN-LAST:event_btnVolverActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnVolver;
     private javax.swing.JComboBox<String> cmbAlergico;
     private javax.swing.JComboBox<String> cmbAtencionEspecial;
     private javax.swing.JLabel jLabel1;

@@ -1,11 +1,38 @@
-package com.mycompany.peluqueriacanina.iu;
+package com.mycompany.peluqueriacanina.ui;
 
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
+import com.mycompany.peluqueriacanina.ui.ImageLoader;
 
 public class Principal extends javax.swing.JFrame {
+    
+    private static javax.swing.JFrame ventanaCargarDatos = null;
 
     public Principal() {
         initComponents();
+        cargarImagenes();
+    }
+    
+    private void cargarImagenes() {
+        // Intentar múltiples nombres posibles para la imagen principal
+        ImageIcon icon = ImageLoader.loadImage("golden_retriever_peluqueria.png");
+        if (icon == null) {
+            icon = ImageLoader.loadImage("LOGO_PELUQUERIA-removebg-preview.png");
+        }
+        if (icon == null) {
+            // Buscar cualquier imagen que contenga "LOGO" o "PELUQUERIA"
+            icon = ImageLoader.loadImage("LOGO_PELUQUERIA-removebg-preview.png");
+        }
+        if (icon != null) {
+            jLabel3.setIcon(icon);
+            jLabel3.setText(""); // Limpiar cualquier texto
+            jLabel3.setVisible(true);
+        } else {
+            // Si no hay imagen, ocultar el label
+            jLabel3.setIcon(null);
+            jLabel3.setText("");
+            jLabel3.setVisible(false);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -123,20 +150,74 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCargaDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargaDatosActionPerformed
-    JFrame frame = new JFrame("Cargar Datos"); // Crear un JFrame
-    CargarDatos pantalla = new CargarDatos(); // Instanciar tu JPanel
-    frame.setContentPane(pantalla); // Agregar el JPanel al JFrame
-    frame.pack(); // Ajustar el tamaño del JFrame al contenido del panel
-    frame.setLocationRelativeTo(null); // Centrar el JFrame en la pantalla
-    frame.setVisible(true); // Hacer el JFrame visible
+        // Verificar si ya hay una ventana de CargarDatos abierta
+        if (ventanaCargarDatos != null && ventanaCargarDatos.isDisplayable()) {
+            ventanaCargarDatos.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
+        
+        // Crear nueva ventana solo si no hay una abierta
+        JFrame frame = new JFrame("Cargar Datos");
+        CargarDatos pantalla = new CargarDatos(frame); // Pasar referencia del frame
+        frame.setContentPane(pantalla);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        // Guardar referencia para controlar instancia única
+        ventanaCargarDatos = frame;
+        
+        // Limpiar referencia cuando se cierre la ventana
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                ventanaCargarDatos = null;
+            }
+        });
     }//GEN-LAST:event_btnCargaDatosActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    // Instancia directamente el JFrame que ya creaste
-    VerDatos verDatosFrame = new VerDatos();
-    verDatosFrame.setLocationRelativeTo(null); // Centrar la ventana
-    verDatosFrame.setVisible(true); // Mostrar la ventana
-
+        VerDatos verDatosFrame = null;
+        
+        try {
+            verDatosFrame = new VerDatos();
+        } catch (Throwable e) {
+            System.err.println("ERROR CRÍTICO al crear VerDatos:");
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Error al crear la ventana Ver Datos:\n\n" + 
+                e.getClass().getSimpleName() + ": " + e.getMessage() + 
+                "\n\nRevisa la consola para más detalles.",
+                "Error Crítico",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        
+        try {
+            verDatosFrame.setLocationRelativeTo(null);
+            verDatosFrame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+            
+            // Asegurar que la ventana tenga un tamaño adecuado
+            if (verDatosFrame.getWidth() < 900) {
+                verDatosFrame.setSize(900, 600);
+            }
+            
+            verDatosFrame.setVisible(true);
+            verDatosFrame.toFront();
+            verDatosFrame.requestFocus();
+        } catch (Exception e) {
+            System.err.println("ERROR al mostrar VerDatos:");
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Error al mostrar la ventana Ver Datos:\n\n" + e.getMessage(),
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

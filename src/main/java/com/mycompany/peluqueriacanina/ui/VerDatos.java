@@ -1,20 +1,73 @@
-package com.mycompany.peluqueriacanina.iu;
+package com.mycompany.peluqueriacanina.ui;
 
-import com.mycompany.peluqueriacanina.logica.Controladora;
-import com.mycompany.peluqueriacanina.logica.Mascota;
+import com.mycompany.peluqueriacanina.service.MascotaService;
+import com.mycompany.peluqueriacanina.model.Mascota;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.ImageIcon;
 
 
 public class VerDatos extends javax.swing.JFrame {
     
-    Controladora control;
+    private MascotaService mascotaService;
 
     public VerDatos() {
-        control =new Controladora();
-        initComponents();
+        // Inicializar servicio de forma segura
+        try {
+            this.mascotaService = new MascotaService();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar MascotaService: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // Inicializar componentes
+        try {
+            initComponents();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar componentes: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Si no se pueden inicializar componentes, no continuar
+        }
+        
+        // Cargar imágenes (no crítico)
+        try {
+            cargarImagenes();
+        } catch (Exception e) {
+            System.err.println("Error al cargar imágenes (no crítico): " + e.getMessage());
+        }
+        
+        // Cargar tabla (puede fallar pero la ventana debe mostrarse)
+        try {
+            cargarTabla();
+        } catch (Exception e) {
+            System.err.println("Error al cargar tabla: " + e.getMessage());
+            e.printStackTrace();
+            // Crear tabla vacía en caso de error
+            try {
+                DefaultTableModel modeloTabla = new DefaultTableModel();
+                String[] titulos = {"Num", "Nombre", "Color", "Raza", "Alergico", "At.Esp", "Dueño", "Cel", "Dirección"};
+                modeloTabla.setColumnIdentifiers(titulos);
+                if (tablaMascotas != null) {
+                    tablaMascotas.setModel(modeloTabla);
+                }
+            } catch (Exception ex) {
+                System.err.println("Error al crear tabla vacía: " + ex.getMessage());
+            }
+        }
+    }
+    
+    private void cargarImagenes() {
+        ImageIcon iconEditar = ImageLoader.loadImage("icono editar.png", 20, 20);
+        if (iconEditar != null) {
+            btnEditar.setIcon(iconEditar);
+        }
+        
+        ImageIcon iconEliminar = ImageLoader.loadImage("icono eliminar.png", 20, 20);
+        if (iconEliminar != null) {
+            btnEliminar.setIcon(iconEliminar);
+        }
     }
    
     @SuppressWarnings("unchecked")
@@ -30,7 +83,7 @@ public class VerDatos extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -143,6 +196,14 @@ public class VerDatos extends javax.swing.JFrame {
         );
 
         pack();
+        
+        // Asegurar que la ventana tenga un tamaño mínimo visible
+        if (getWidth() < 800) {
+            setSize(800, 600);
+        }
+        if (getHeight() < 600) {
+            setSize(Math.max(getWidth(), 800), 600);
+        }
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
@@ -160,11 +221,18 @@ public class VerDatos extends javax.swing.JFrame {
             int num_cliente = Integer.parseInt(String.valueOf(tablaMascotas.getValueAt(tablaMascotas.getSelectedRow(), 0)));
             
             ModificarDatos pantallaModif = new ModificarDatos(num_cliente);
-            JDialog dialog = new JDialog();
+            JDialog dialog = new JDialog(this, "Modificacion de datos", true);
             dialog.setContentPane(pantallaModif);
-            dialog.setModal(true);
-            dialog.setLocationRelativeTo(null);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.pack();
+            
+            // Asegurar tamaño adecuado
+            if (dialog.getWidth() < 800) {
+                dialog.setSize(800, 600);
+            }
+            
+            // Centrar en la pantalla
+            dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
             
             cargarTabla();
@@ -198,7 +266,7 @@ public class VerDatos extends javax.swing.JFrame {
             );
             
             if (confirmacion == JOptionPane.YES_OPTION) {
-                control.borrarMascota(num_cliente);
+                mascotaService.eliminarMascota(num_cliente);
                 mostrarMensaje("Mascota eliminada correctamente", "Info", "Eliminación exitosa");
                 cargarTabla();
             }
@@ -241,47 +309,64 @@ public class VerDatos extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public void cargarTabla() {
-        DefaultTableModel modeloTabla = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        
-        String[] titulos = {"Num", "Nombre", "Color", "Raza", "Alergico", "At.Esp", "Dueño", "Cel", "Dirección"};
-        modeloTabla.setColumnIdentifiers(titulos);
-        
-        List<Mascota> listaMascotas = control.traerMascotas();
-        
-        if (listaMascotas != null) {
-            for (Mascota masco : listaMascotas) {
-                String nombreDuenio = "";
-                String celDuenio = "";
-                String direccion = "";
-                
-                if (masco.getUnDuenio() != null) {
-                    nombreDuenio = masco.getUnDuenio().getNombre() != null ? masco.getUnDuenio().getNombre() : "";
-                    celDuenio = masco.getUnDuenio().getCelDuenio() != null ? masco.getUnDuenio().getCelDuenio() : "";
-                    direccion = masco.getUnDuenio().getDireccion() != null ? masco.getUnDuenio().getDireccion() : "";
+        try {
+            DefaultTableModel modeloTabla = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
                 }
-                
-                Object[] objeto = {
-                    masco.getNum_cliente(),
-                    masco.getNombre() != null ? masco.getNombre() : "",
-                    masco.getColor() != null ? masco.getColor() : "",
-                    masco.getRaza() != null ? masco.getRaza() : "",
-                    masco.getAlergico() != null ? masco.getAlergico() : "",
-                    masco.getAtencion_especial() != null ? masco.getAtencion_especial() : "",
-                    nombreDuenio,
-                    celDuenio,
-                    direccion
-                };
-                
-                modeloTabla.addRow(objeto);
+            };
+            
+            String[] titulos = {"Num", "Nombre", "Color", "Raza", "Alergico", "At.Esp", "Dueño", "Cel", "Dirección"};
+            modeloTabla.setColumnIdentifiers(titulos);
+            
+            if (mascotaService == null) {
+                tablaMascotas.setModel(modeloTabla);
+                return;
             }
+            
+            List<Mascota> listaMascotas = mascotaService.obtenerTodasLasMascotas();
+            
+            if (listaMascotas != null && !listaMascotas.isEmpty()) {
+                for (Mascota masco : listaMascotas) {
+                    if (masco == null) {
+                        continue;
+                    }
+                    
+                    String nombreDuenio = "";
+                    String celDuenio = "";
+                    String direccion = "";
+                    
+                    if (masco.getUnDuenio() != null) {
+                        nombreDuenio = masco.getUnDuenio().getNombre() != null ? masco.getUnDuenio().getNombre() : "";
+                        celDuenio = masco.getUnDuenio().getCelDuenio() != null ? masco.getUnDuenio().getCelDuenio() : "";
+                        direccion = masco.getUnDuenio().getDireccion() != null ? masco.getUnDuenio().getDireccion() : "";
+                    }
+                    
+                    Object[] objeto = {
+                        masco.getNum_cliente(),
+                        masco.getNombre() != null ? masco.getNombre() : "",
+                        masco.getColor() != null ? masco.getColor() : "",
+                        masco.getRaza() != null ? masco.getRaza() : "",
+                        masco.getAlergico() != null ? masco.getAlergico() : "",
+                        masco.getAtencion_especial() != null ? masco.getAtencion_especial() : "",
+                        nombreDuenio,
+                        celDuenio,
+                        direccion
+                    };
+                    
+                    modeloTabla.addRow(objeto);
+                }
+            }
+            
+            tablaMascotas.setModel(modeloTabla);
+        } catch (Exception e) {
+            mostrarMensaje("Error al cargar los datos: " + e.getMessage(), "Error", "Error al cargar datos");
+            DefaultTableModel modeloTabla = new DefaultTableModel();
+            String[] titulos = {"Num", "Nombre", "Color", "Raza", "Alergico", "At.Esp", "Dueño", "Cel", "Dirección"};
+            modeloTabla.setColumnIdentifiers(titulos);
+            tablaMascotas.setModel(modeloTabla);
         }
-        
-        tablaMascotas.setModel(modeloTabla);
     }
-    }
+}
 

@@ -1,0 +1,55 @@
+===========================================
+UBICACIÓN EXACTA DE LAS IMAGENES
+===========================================
+
+Las imágenes DEBEN estar en esta carpeta:
+
+C:\Users\Usuario\Documents\NetBeansProjects\peluqueriaCanina\src\main\resources\images\
+
+===========================================
+NOMBRES EXACTOS REQUERIDOS:
+===========================================
+
+1. golden_retriever_peluqueria.png
+   → Se muestra en la ventana PRINCIPAL
+
+2. gato_jugando_lana.png
+   → Se muestra en las ventanas CARGAR DATOS y MODIFICAR DATOS
+
+===========================================
+CÓMO AGREGAR LAS IMAGENES:
+===========================================
+
+OPCIÓN 1: Desde el Explorador de Windows
+1. Abre el Explorador de Windows
+2. Navega a: C:\Users\Usuario\Documents\NetBeansProjects\peluqueriaCanina\src\main\resources\images\
+3. Copia y pega las imágenes ahí
+4. Asegúrate de que los nombres sean EXACTOS (case-sensitive)
+
+OPCIÓN 2: Desde NetBeans
+1. En NetBeans, expande: Source Packages → src/main/resources → images
+2. Clic derecho en "images" → Add Files...
+3. Selecciona las imágenes
+4. Renómbralas según los nombres indicados arriba
+
+OPCIÓN 3: Usar el script
+1. Ejecuta: copiar_imagenes.bat
+2. Sigue las instrucciones en pantalla
+
+===========================================
+DESPUÉS DE AGREGAR:
+===========================================
+
+1. Recompila: mvn clean compile
+2. Ejecuta la aplicación
+3. Las imágenes deberían aparecer automáticamente
+
+===========================================
+NOTA IMPORTANTE:
+===========================================
+
+Si las imágenes NO están en la carpeta, verás un mensaje
+informativo en lugar de la imagen. Esto es normal y la
+aplicación funcionará correctamente.
+
+

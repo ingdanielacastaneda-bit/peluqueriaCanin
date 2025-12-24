@@ -1,36 +1,57 @@
+package com.mycompany.peluqueriacanina.model;
 
-package com.mycompany.peluqueriacanina.logica;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
- * Entidad que representa una mascota en el sistema de peluquería canina.
- * Contiene toda la información relacionada con la mascota y su relación
- * con el dueño mediante una relación OneToOne.
+ * Entidad JPA que representa una mascota en el sistema.
+ * Mantiene relación OneToOne con Duenio.
+ * 
+ * Nota: Los nombres de campos se mantienen para compatibilidad con la base de datos existente.
  */
-@Entity 
+@Entity
+@Table(name = "mascota")
 public class Mascota {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "num_cliente")
     private int num_cliente;
+    
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
+    
+    @Column(name = "raza", nullable = false, length = 50)
     private String raza;
+    
+    @Column(name = "color", nullable = false, length = 50)
     private String color;
+    
+    @Column(name = "alergico", length = 10)
     private String alergico;
+    
+    @Column(name = "atencion_especial", length = 10)
     private String atencion_especial;
+    
+    @Column(name = "observaciones", length = 500)
     private String observaciones;
-    @OneToOne
+    
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "id_duenio", nullable = false)
     private Duenio unDuenio;
 
     public Mascota() {
     }
 
-    public Mascota(int num_cliente, String nombre, String raza, String color, String alergico, String atencion_especial, String observaciones, Duenio unDuenio) {
+    public Mascota(int num_cliente, String nombre, String raza, String color, 
+                   String alergico, String atencion_especial, String observaciones, Duenio unDuenio) {
         this.num_cliente = num_cliente;
         this.nombre = nombre;
         this.raza = raza;
@@ -112,3 +133,4 @@ public class Mascota {
                ", atencion_especial=" + atencion_especial + '}';
     }
 }
+

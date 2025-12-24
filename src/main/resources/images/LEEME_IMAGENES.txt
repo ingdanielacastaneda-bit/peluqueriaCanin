@@ -1,0 +1,32 @@
+===========================================
+INSTRUCCIONES PARA AGREGAR LAS IMÁGENES
+===========================================
+
+Coloca las siguientes imágenes en ESTA carpeta (src/main/resources/images/):
+
+1. golden_retriever_peluqueria.png
+   - Imagen del golden retriever con herramientas de peluquería
+   - Se mostrará en la ventana principal
+
+2. gato_jugando_lana.png
+   - Imagen del gato naranja jugando con lana
+   - Se mostrará en la ventana de cargar datos
+
+===========================================
+PASOS:
+===========================================
+
+1. Guarda las imágenes con los nombres exactos indicados arriba
+2. Copia las imágenes a esta carpeta
+3. Recompila el proyecto: mvn clean compile
+4. Ejecuta la aplicación
+
+===========================================
+NOTA:
+===========================================
+
+Las imágenes SÍ se subirán al repositorio Git porque esta carpeta
+NO está en .gitignore. Esto es correcto ya que las imágenes son
+parte de los recursos del proyecto.
+
+
